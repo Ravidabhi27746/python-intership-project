@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Size Detector - ImageAnalyzer</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --dark-color: #333;
+            --light-color: #f8f9fa;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--dark-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            background-color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        .upload-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .option-card {
+            background: var(--light-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .option-card h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .option-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-container {
+            display: none;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        #cameraPreview {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            border-left: 4px solid;
+        }
+
+        .alert-success { 
+            background: #d4edda; 
+            color: #155724;
+            border-left-color: var(--success-color);
+        }
+        .alert-error { 
+            background: #f8d7da; 
+            color: #721c24;
+            border-left-color: var(--danger-color);
+        }
+
+        .results-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--light-color);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .image-preview {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: 1rem 0;
+        }
+
+        .measurements-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .measurement-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .measurement-details {
+            flex: 1;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+
+        .object-name-input {
+            flex: 2;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .object-name-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .results-title {
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .no-objects-message {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .upload-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .measurement-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .camera-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">ImageAnalyzer</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/image_info">Image Info</a></li>
+            <li><a href="/img_search">Search</a></li>
+            <li><a href="/about_us">About Us</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>Measure Objects with Camera</h1>
+            
+            <!-- Upload Options -->
+            <div class="upload-options">
+                <div class="option-card" onclick="showCamera()">
+                    <h3>📷 Use Camera</h3>
+                    <p>Capture image directly from your camera for real-time object measurement</p>
+                    <button class="btn btn-primary">Open Camera</button>
+                </div>
+                
+                <div class="option-card" onclick="showFileUpload()">
+                    <h3>📁 Upload File</h3>
+                    <p>Upload an existing image file from your device</p>
+                    <button class="btn btn-primary">Choose File</button>
+                </div>
+            </div>
+
+            <!-- Camera Interface -->
+            <div id="cameraContainer" class="camera-container">
+                <video id="cameraPreview" autoplay playsinline></video>
+                <div class="camera-controls">
+                    <button id="captureBtn" class="btn btn-success">Capture Image</button>
+                    <button id="retakeBtn" class="btn btn-danger" style="display: none;">Retake</button>
+                    <button id="processBtn" class="btn btn-primary" style="display: none;">Process Image</button>
+                    <button id="closeCameraBtn" class="btn btn-danger">Close Camera</button>
+                </div>
+                <canvas id="captureCanvas" style="display: none;"></canvas>
+            </div>
+
+            <!-- File Upload Form -->
+            <form id="fileUploadForm" method="post" enctype="multipart/form-data" style="display: none;">
+                <div style="text-align: center; margin: 2rem 0;">
+                    <input type="file" name="image" accept="image/*" required 
+                           style="padding: 1rem; border: 2px dashed #ccc; border-radius: var(--border-radius); width: 100%; max-width: 400px;">
+                    <br><br>
+                    <button type="submit" class="btn btn-primary">Upload and Process</button>
+                    <button type="button" class="btn btn-danger" onclick="hideFileUpload()">Cancel</button>
+                </div>
+            </form>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loadingIndicator">
+                <div class="loading-spinner"></div>
+                <p>Processing your image... This may take a few moments.</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div id="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Results Section - Always show when we have results -->
+            {% if image_url %}
+                <div class="results-section">
+                    <h2 class="results-title">Measurement Results</h2>
+                    
+                    <!-- Processed Image -->
+                    <div style="text-align: center;">
+                        <h3>Processed Image with Object Detection</h3>
+                        <img src="{{ image_url }}" alt="Processed Image" class="image-preview">
+                    </div>
+
+                    <!-- Measurements -->
+                    {% if measurements %}
+                        <div style="margin-top: 2rem;">
+                            <h3 style="text-align: center; margin-bottom: 1.5rem;">Detected Object Measurements</h3>
+                            <form method="post" action="/save_measurements">
+                                <input type="hidden" name="image_filename" value="{{ processed_filename }}">
+                                <div class="measurements-grid">
+                                    {% for m in measurements %}
+                                        <div class="measurement-item">
+                                            <div class="measurement-details">
+                                                📏 {{ m.width_cm }} cm × {{ m.height_cm }} cm
+                                            </div>
+                                            <input type="text" 
+                                                   name="object_name_{{ loop.index }}" 
+                                                   placeholder="Enter object name (e.g., Book, Phone, etc.)" 
+                                                   maxlength="50" 
+                                                   required
+                                                   class="object-name-input">
+                                            <input type="hidden" name="width_cm_{{ loop.index }}" value="{{ m.width_cm }}">
+                                            <input type="hidden" name="height_cm_{{ loop.index }}" value="{{ m.height_cm }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div style="text-align: center; margin-top: 2rem;">
+                                    <button type="submit" class="btn btn-success" style="padding: 1rem 3rem; font-size: 1.1rem;">
+                                        💾 Save Measurements to Database
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="no-objects-message">
+                            <h3>No Objects Detected</h3>
+                            <p>No objects were detected in the image. Please try again with better lighting and ensure objects are clearly visible.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        let stream = null;
+        let capturedImage = null;
+
+        function showCamera() {
+            document.getElementById('cameraContainer').style.display = 'block';
+            document.getElementById('fileUploadForm').style.display = 'none';
+            document.querySelector('.upload-options').style.display = 'none';
+            startCamera();
+        }
+
+        function showFileUpload() {
+            document.getElementById('fileUploadForm').style.display = 'block';
+            document.getElementById('cameraContainer').style.display = 'none';
+            document.querySelector('.upload-options').style.display = 'none';
+        }
+
+        function hideFileUpload() {
+            document.getElementById('fileUploadForm').style.display = 'none';
+            document.querySelector('.upload-options').style.display = 'grid';
+        }
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    } 
+                });
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                
+                document.getElementById('captureBtn').style.display = 'block';
+                document.getElementById('closeCameraBtn').style.display = 'block';
+            } catch (err) {
+                alert('Error accessing camera: ' + err.message);
+                console.error('Camera error:', err);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        function captureImage() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('captureCanvas');
+            const context = canvas.getContext('2d');
+            
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw current video frame to canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert to base64
+            capturedImage = canvas.toDataURL('image/jpeg');
+            
+            // Show captured image preview
+            video.style.display = 'none';
+            const img = document.createElement('img');
+            img.src = capturedImage;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '500px';
+            img.style.borderRadius = 'var(--border-radius)';
+            img.style.boxShadow = 'var(--box-shadow)';
+            video.parentNode.insertBefore(img, video);
+            
+            // Update button states
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('retakeBtn').style.display = 'block';
+            document.getElementById('processBtn').style.display = 'block';
+        }
+
+        function retakeImage() {
+            const video = document.getElementById('cameraPreview');
+            video.style.display = 'block';
+            
+            // Remove the captured image preview
+            const img = video.parentNode.querySelector('img');
+            if (img) {
+                img.remove();
+            }
+            
+            // Update button states
+            document.getElementById('captureBtn').style.display = 'block';
+            document.getElementById('retakeBtn').style.display = 'none';
+            document.getElementById('processBtn').style.display = 'none';
+            
+            capturedImage = null;
+        }
+
+        async function processImage() {
+            if (!capturedImage) {
+                alert('Please capture an image first');
+                return;
+            }
+            
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.style.display = 'block';
+            
+            try {
+                const response = await fetch('/capture_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: capturedImage })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Redirect to home page to show results
+                    window.location.href = result.redirect;
+                } else {
+                    alert('Error processing image: ' + result.error);
+                    loadingIndicator.style.display = 'none';
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                loadingIndicator.style.display = 'none';
+                console.error('Processing error:', error);
+            }
+        }
+
+        function closeCamera() {
+            stopCamera();
+            document.getElementById('cameraContainer').style.display = 'none';
+            document.querySelector('.upload-options').style.display = 'grid';
+            
+            // Reset camera state
+            const video = document.getElementById('cameraPreview');
+            video.style.display = 'block';
+            const img = video.parentNode.querySelector('img');
+            if (img) {
+                img.remove();
+            }
+            
+            document.getElementById('captureBtn').style.display = 'block';
+            document.getElementById('retakeBtn').style.display = 'none';
+            document.getElementById('processBtn').style.display = 'none';
+            
+            capturedImage = null;
+        }
+
+        // Event listeners
+        document.getElementById('captureBtn').addEventListener('click', captureImage);
+        document.getElementById('retakeBtn').addEventListener('click', retakeImage);
+        document.getElementById('processBtn').addEventListener('click', processImage);
+        document.getElementById('closeCameraBtn').addEventListener('click', closeCamera);
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.style.opacity = '0';
+                setTimeout(() => flashMessages.remove(), 500);
+            }
+        }, 5000);
+
+      
+    </script>
+</body>
+</html>

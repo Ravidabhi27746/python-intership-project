@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - ImageAnalyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            background-color: #333;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        p, li {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">ImageAnalyzer</div>
+    <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/image_info">Image Info</a></li>
+        <li><a href="/img_search">Search</a></li>
+        <li><a href="/about_us">About Us</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <h1>About ImageAnalyzer</h1>
+
+    <div class="section">
+        <p><strong>ImageAnalyzer</strong> is a smart image processing web application that lets users analyze images by uploading them. It detects objects, measures their height and width, extracts image metadata, and stores everything for future search and review.</p>
+    </div>
+
+    <div class="section">
+        <h2>📁 Home Page</h2>
+        <ul>
+            <li>Users can upload an image.</li>
+            <li>The application processes the image to detect real-world objects.</li>
+            <li>Each object’s name, height, and width is calculated and displayed.</li>
+            <li>The processed image is saved, and object data is stored in the database.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🖼️ Image Info Page</h2>
+        <ul>
+            <li>Users upload an image to view detailed technical metadata.</li>
+            <li>Information includes:
+                <ul>
+                    <li>Filename</li>
+                    <li>Format</li>
+                    <li>Width x Height (pixels)</li>
+                    <li>Color Mode</li>
+                    <li>Bit Depth</li>
+                    <li>Compression Type</li>
+                    <li>DPI (X x Y)</li>
+                    <li>Physical Size (in cm)</li>
+                    <li>Average Red, Green, Blue values</li>
+                    <li>File Size</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🔍 Search Page</h2>
+        <ul>
+            <li>Users can search by:
+                <ul>
+                    <li><strong>Image Name:</strong> If found, full image metadata is displayed.</li>
+                    <li><strong>Object Name:</strong> If found, details like object name, dimensions, and related image filename are shown.</li>
+                </ul>
+            </li>
+            <li>If no result is found, a message is shown to inform the user.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>👨‍💻 Developed For</h2>
+        <p>This tool is developed for students, researchers, and developers who work with images and need to analyze object sizes and metadata easily. It combines image processing with a clean web interface for a smooth experience.</p>
+    </div>
+</div>
+
+<div class="footer">
+    &copy; 2025 ImageAnalyzer. All rights reserved.
+</div>
+
+</body>
+</html>
+        
